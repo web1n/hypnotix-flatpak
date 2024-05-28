@@ -2,7 +2,7 @@
 <component type="desktop-application">
   <id>com.linuxmint.Hypnotix</id>
   <name>Hypnotix</name>
-  <project_license>GPLv3</project_license>
+  <project_license>GPL-3.0</project_license>
   <developer_name>Linux Mint</developer_name>
   <summary>Watch TV</summary>
   <metadata_license>CC0-1.0</metadata_license>
