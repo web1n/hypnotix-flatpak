@@ -92,6 +92,8 @@ modules:
       - cp -r usr/* /app
 
       - glib-compile-schemas /app/share/glib-2.0/schemas
+      - desktop-file-edit /app/share/applications/hypnotix.desktop --set-key=StartupWMClass --set-value=hypnotix.py
+      - desktop-file-edit /app/share/applications/hypnotix.desktop --set-key=StartupNotify --set-value=true
 
       - install -Dm644 $FLATPAK_ID.metainfo.xml -t /app/share/metainfo
       - install -Dm755 hypnotix.sh /app/bin/hypnotix
