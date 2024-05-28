@@ -1,0 +1,109 @@
+id: com.linuxmint.Hypnotix
+runtime: org.gnome.Platform
+runtime-version: '46'
+sdk: org.gnome.Sdk
+command: hypnotix
+rename-desktop-file: hypnotix.desktop
+rename-icon: hypnotix
+separate-locales: false
+
+finish-args:
+  - --share=ipc
+  - --socket=x11
+  - --share=network
+  - --socket=pulseaudio
+  - --device=dri
+  - --own-name=org.x.hypnotix
+cleanup:
+  - /include
+  - /lib/pkgconfig
+  - /man
+  - /share/aclocal
+  - /share/doc
+  - /share/gir-1.0
+  - /share/glade
+  - /share/gtk-doc
+  - /share/man
+  - /share/pkgconfig
+  - /share/vala
+  - "*.a"
+  - "*.la"
+  - "*.pyc"
+  - "__pycache__"
+
+modules:
+  - libmpv.yaml
+  - pygobject-modules.json
+  - python3-modules.json
+
+  - name: xapps
+    buildsystem: meson
+    config-opts:
+      - -Dapp-lib-only=true
+      - -Dpy-overrides-dir=/app/lib/python3.11/site-packages/gi/overrides
+    sources:
+      - type: archive
+        url: https://github.com/linuxmint/xapp/archive/refs/tags/2.8.2.tar.gz
+        sha256: 07b00d02d2bdd93c043e370305071df80f21ded6404f7309b590a8f896e635b2
+        x-checker-data:
+          type: anitya
+          project-id: 12203
+          stable-only: true
+          url-template: https://github.com/linuxmint/xapp/archive/refs/tags/$version.tar.gz
+      - type: patch
+        path: xapps-meson-icons.patch
+
+  - name: yt-dlp
+    no-autogen: true
+    no-make-install: true
+    make-args:
+      - yt-dlp
+      - PYTHON=/usr/bin/python3
+    post-install:
+      - install -Dm755 yt-dlp /app/bin
+    sources:
+      - type: archive
+        url: https://github.com/yt-dlp/yt-dlp/archive/refs/tags/2024.05.26.tar.gz
+        sha256: 8daf63bd8c63970d8f49d67a539da2e6f3628c3006e8daf53276b96790384b40
+        x-checker-data:
+          type: anitya
+          project-id: 143399
+          stable-only: true
+          url-template: https://github.com/yt-dlp/yt-dlp/archive/refs/tags/$version.tar.gz
+
+  - name: circle-flags-svg
+    buildsystem: simple
+    build-commands:
+      - cp -r usr/* /app
+    sources:
+      - type: archive
+        url: https://github.com/linuxmint/circle-flags/archive/165849bf074ace2e9db6d081fcf15593d78296ba.zip
+        sha256: bc799af56502f9ccd5f9e65f83a65cbf5b98ba7ed895d3e2e1d7888931ec4237
+
+  - name: hypnotix
+    buildsystem: simple
+    build-commands:
+      - bsdtar --to-stdout -xf hypnotix_4.3_all.deb data.* | bsdtar -xf -
+
+      - sed -i "s|/usr/share/|/app/share/|g" usr/lib/hypnotix/hypnotix.py
+      - sed -i "s|/usr/bin/yt-dlp|/app/bin/yt-dlp|g" usr/lib/hypnotix/hypnotix.py
+      - sed -i "s|(\"hypnotix\")|(\"$FLATPAK_ID\")|g" usr/lib/hypnotix/hypnotix.py
+
+      - cp -r usr/* /app
+
+      - glib-compile-schemas /app/share/glib-2.0/schemas
+
+      - install -Dm644 $FLATPAK_ID.metainfo.xml -t /app/share/metainfo
+      - install -Dm755 hypnotix.sh /app/bin/hypnotix
+      - install -Dm644 gpl-3.0.txt /app/share/common-licenses/GPL
+    sources:
+      - type: archive
+        url: https://github.com/linuxmint/hypnotix/releases/download/master.lmde6/packages.tar.gz
+        sha256: d5ddec2511374a4182d9a81d3bdee90a79534277c47ed8bc183630136304431e
+      - type: file
+        path: com.linuxmint.Hypnotix.metainfo.xml
+      - type: file
+        path: hypnotix.sh
+      - type: file
+        url: https://www.gnu.org/licenses/gpl-3.0.txt
+        sha256: 3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986

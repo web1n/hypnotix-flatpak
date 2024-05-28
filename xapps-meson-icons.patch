@@ -1,0 +1,10 @@
+--- a/meson.build	2024-05-27 23:55:15.731952788 +0800
++++ b/meson.build	2024-05-27 23:55:35.063952676 +0800
+@@ -47,6 +47,7 @@ subdir('libxapp')
+ subdir('po')
+ subdir('schemas')
+ subdir('pygobject')
++subdir('icons')
+ 
+ if not app_lib_only
+     subdir('icons')

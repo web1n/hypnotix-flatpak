@@ -1,0 +1,75 @@
+name: Build Flatpak Bundle
+on:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  build-bundle:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        arch: [x86_64]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up QEMU
+        if: ${{ matrix.arch != 'x86_64' }}
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: ${{ matrix.arch }}
+      - name: Install Flatpak
+        run:
+          |
+          sudo apt -qq update
+          sudo apt -qq install -y flatpak flatpak-builder
+          sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+          sudo flatpak install --noninteractive --arch=${{ matrix.arch }} org.gnome.Platform//46 org.gnome.Sdk//46
+          git config --global protocol.file.allow always # https://github.com/flatpak/flatpak-builder/issues/495
+      - name: Build
+        run:
+          |
+          flatpak-builder --arch=${{ matrix.arch }} --repo=repo build com.linuxmint.Hypnotix.yaml
+          flatpak build-bundle --arch=${{ matrix.arch }} ./repo com.linuxmint.Hypnotix-${{ matrix.arch }}.flatpak com.linuxmint.Hypnotix
+      - name: Upload to Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: flatpak-bundle-${{ matrix.arch }}
+          path: com.linuxmint.Hypnotix-${{ matrix.arch }}.flatpak
+  
+  upload-release:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: build-bundle
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install xmlstarlet
+        run: sudo apt -qq update && sudo apt -qq install -y xmlstarlet
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+      - name: Get current date & version
+        id: env
+        run:
+          |
+          echo "CURRENT_DATE=$(date -u '+%y%m%d%H%M')" >> $GITHUB_OUTPUT
+          echo "VERSION=$(xmlstarlet sel -t -v //component/releases/release[1]/@version com.linuxmint.Hypnotix.metainfo.xml)" >> $GITHUB_OUTPUT
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ steps.env.outputs.VERSION }}
+          tag_name: ${{ steps.env.outputs.VERSION }}-${{ steps.env.outputs.CURRENT_DATE }}
+          files: com.linuxmint.Hypnotix-*.flatpak
+          body:
+            |
+            install via:
+            ```
+            flatpak install com.linuxmint.Hypnotix-<arch>.flatpak
+            ```

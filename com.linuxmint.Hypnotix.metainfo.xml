@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.linuxmint.Hypnotix</id>
+  <name>Hypnotix</name>
+  <project_license>GPLv3</project_license>
+  <developer_name>Linux Mint</developer_name>
+  <summary>Watch TV</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <launchable type="desktop-id">com.linuxmint.Hypnotix.desktop</launchable>
+  <url type="homepage">https://community.linuxmint.com/software/view/hypnotix</url>
+  <url type="help">https://github.com/linuxmint/hypnotix/issues</url>
+  <description>
+    <p>Hypnotix is an IPTV streaming application with support for live TV, movies and series.</p>
+  </description>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://community.linuxmint.com/img/screenshots/hypnotix.png</image>
+    </screenshot>
+  </screenshots>
+  <categories>
+    <category>Network</category>
+  </categories>
+  <releases>
+    <release version="4.3" date="2024-01-05"/>
+  </releases>
+  <content_rating type="oars-1.1"/>
+</component>
