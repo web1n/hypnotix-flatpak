@@ -83,7 +83,7 @@ modules:
   - name: hypnotix
     buildsystem: simple
     build-commands:
-      - bsdtar --to-stdout -xf hypnotix_4.3_all.deb data.* | bsdtar -xf -
+      - bsdtar --to-stdout -xf hypnotix_*_all.deb data.* | bsdtar -xf -
 
       - sed -i "s|/usr/share/|/app/share/|g" usr/lib/hypnotix/hypnotix.py
       - sed -i "s|/usr/bin/yt-dlp|/app/bin/yt-dlp|g" usr/lib/hypnotix/hypnotix.py
@@ -101,7 +101,7 @@ modules:
     sources:
       - type: archive
         url: https://github.com/linuxmint/hypnotix/releases/download/master.lmde6/packages.tar.gz
-        sha256: d5ddec2511374a4182d9a81d3bdee90a79534277c47ed8bc183630136304431e
+        sha256: cffdf47f38f94a096c33fdbe7ded7a08fdcb14e4a353c89fff77226d57008781
       - type: file
         path: com.linuxmint.Hypnotix.metainfo.xml
       - type: file
