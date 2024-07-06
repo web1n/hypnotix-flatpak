@@ -83,7 +83,7 @@ modules:
   - name: hypnotix
     buildsystem: simple
     build-commands:
-      - bsdtar --to-stdout -xf hypnotix_4.3_all.deb data.* | bsdtar -xf -
+      - bsdtar --to-stdout -xf hypnotix_*_all.deb data.* | bsdtar -xf -
 
       - sed -i "s|/usr/share/|/app/share/|g" usr/lib/hypnotix/hypnotix.py
       - sed -i "s|/usr/bin/yt-dlp|/app/bin/yt-dlp|g" usr/lib/hypnotix/hypnotix.py
